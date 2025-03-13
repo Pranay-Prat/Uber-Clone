@@ -1,15 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
+import { CaptainDataContext } from '../context/CaptainContext';
 const CaptainLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [captainData, setCaptainData] = useState(null);
+  const {captain , setCaptain} = useContext(CaptainDataContext);
   const navigate = useNavigate();
 
   const submitHandler = (event) => {
     event.preventDefault();
-    setCaptainData({ email, password });
+    const captain = { email, password };
+    const response = axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`,captain)
+    if(response.status===200){
+      const data = response.data
+      setCaptain(data.captain)
+      localStorage.setItem('token',data.token)
+      navigate('/captain-home')
+    }
     setEmail('');
     setPassword('');
   };
@@ -28,7 +36,7 @@ const CaptainLogin = () => {
             type="email"
             required
             placeholder="email@example.com"
-            className="bg-[#eeeeee] mb-7 rounded w-full px-4 py-2 border text-lg placeholder:text-base"
+            className="bg-[#eeeeee] mb-7 rounded w-full px-4 py-2 border text-lg placeholder:text-lg"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
