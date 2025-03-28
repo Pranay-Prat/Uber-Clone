@@ -16,12 +16,12 @@ module.exports.registerCaptain = async(req,res,next)=>{
     }
     const hashPassword = await captainModel.hashPassword(password);
     const captain = await captainService.createCaptain({
-        firstname:fullname.firstname, 
-        lastname:fullname.firstname, 
+        firstname:(fullname?.firstname).charAt(0).toUpperCase() + (fullname?.firstname).slice(1).toLowerCase(), 
+        lastname:(fullname?.lastname).charAt(0).toUpperCase() + (fullname?.lastname).slice(1).toLowerCase(), 
         email, 
         password:hashPassword, 
         color:vehicle.color, 
-        plate:vehicle.plate, 
+        plate:(vehicle.plate).toUpperCase(), 
         capacity:vehicle.capacity, 
         vehicleType:vehicle.vehicleType
     });
