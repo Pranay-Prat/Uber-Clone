@@ -101,5 +101,5 @@ We welcome contributions from the community! Follow these steps to get started:
 
 8. **Create a Pull Request**: Go to the original repository on GitHub and create a pull request describing your changes.
 
-We appreciate your contributions and look forward to collaborating with you!
+I appreciate your contributions and look forward to collaborating with you!
 
