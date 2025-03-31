@@ -45,4 +45,9 @@ We welcome contributions from the community! Follow these steps to get started:
    ```bash
    git clone https://github.com/your-username/Uber-Clone.git
    cd Uber-Clone
+
+3. **Install Dependencies**: Navigate to the backend folder and install dependencies:
+   ```bash
+   cd backend
+   npm install
    
