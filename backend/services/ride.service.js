@@ -1,6 +1,9 @@
+const { log } = require('console');
 const rideModel = require('../models/ride.model');
 const mapsService = require('../services/maps.service');
 const crypto = require('crypto');
+const { sendMessageToSocketId } = require('../socket');
+
 async function getFare(pickup, destination) {
 
     if (!pickup || !destination) {
@@ -16,23 +19,23 @@ async function getFare(pickup, destination) {
     };
 
     const perKmRate = {
-        auto: 10,
-        car: 15,
-        moto: 8
+        auto: 7,
+        car: 10,
+        moto: 6
     };
 
     const perMinuteRate = {
-        auto: 2,
-        car: 3,
+        auto: 1.8,
+        car: 2.8,
         moto: 1.5
     };
 
 
 
     const fare = {
-        auto: Math.round(baseFare.auto + ((distanceTime.distance.value / 1000) * perKmRate.auto) + ((distanceTime.duration.value / 60) * perMinuteRate.auto)),
-        car: Math.round(baseFare.car + ((distanceTime.distance.value / 1000) * perKmRate.car) + ((distanceTime.duration.value / 60) * perMinuteRate.car)),
-        moto: Math.round(baseFare.moto + ((distanceTime.distance.value / 1000) * perKmRate.moto) + ((distanceTime.duration.value / 60) * perMinuteRate.moto))
+        auto: Math.round(baseFare.auto + ((distanceTime.distanceInKm ) * perKmRate.auto) + ((distanceTime.duration ) * perMinuteRate.auto)),
+        car: Math.round(baseFare.car + ((distanceTime.distanceInKm) * perKmRate.car) + ((distanceTime.duration ) * perMinuteRate.car)),
+        moto: Math.round(baseFare.moto + ((distanceTime.distanceInKm ) * perKmRate.moto) + ((distanceTime.duration) * perMinuteRate.moto))
     };
 
     return fare;
@@ -60,4 +63,70 @@ module.exports.createRide = async({user,pickup,destination,vehicleType}) => {
         fare: fare[vehicleType]
     });
     return ride;
+}
+module.exports.confirmRide = async(rideId,captainId) => {
+    if(!rideId) {
+        throw new Error('Ride ID is required');
+    }
+    await rideModel.findByIdAndUpdate({_id: rideId}, {status: 'accepted',
+        captain: captainId
+    });
+    const ride = await rideModel.findOne({_id: rideId}).populate('user').populate('captain').select('+otp');
+    if(!ride) {
+        throw new Error('Ride not found');
+    }
+    console.log(ride)
+    return ride;
+}
+module.exports.startRide = async (rideId, otp, captain)=>{
+    if(!rideId || !otp){
+        throw new Error('Ride ID and OTP are required');
+    }
+    const ride = await rideModel.findOne({
+        _id:rideId
+
+    }).populate('user').populate('captain').select('+otp');
+    if(!ride){
+        throw new Error('Ride not found');
+    }
+    if(ride.status !== 'accepted'){
+        throw new Error('Ride not accepted')
+    }
+    if(ride.otp !== otp){
+        throw new Error('Invalid OTP')
+    }
+    await rideModel.findOneAndUpdate({
+        _id: rideId
+    },{
+        status: 'ongoing'
+    })
+    sendMessageToSocketId(ride.user.socketId,{
+        event: 'ride-started',
+        data: ride
+    })
+    return ride
+}
+module.exports.endRide = async (rideId, captainId) => {
+    if(!rideId || !captainId){
+        throw new Error('Ride ID and Captain ID are required');
+    }
+    const ride = await rideModel.findOne({_id: rideId, captain: captainId}).populate('user').populate('captain').select('+otp');
+    if(!ride){
+        throw new Error('Ride not found');
+    }
+    console.log(ride.status);
+    
+    if(ride.status !== 'ongoing'){
+        throw new Error('Ride not ongoing')
+    }
+    await rideModel.findOneAndUpdate({
+        _id: rideId
+    },{
+        status: 'completed'
+    })
+    sendMessageToSocketId(ride.user.socketId,{
+        event: 'ride-ended',
+        data: ride
+    })
+    return ride   
 }

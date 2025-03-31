@@ -3,12 +3,12 @@ import React, { createContext, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
 export const SocketContext = createContext();
+const BASE_URL = import.meta.env.VITE_BASE_URL ;
+const socket = io(BASE_URL);
 
-const socket = io(`${import.meta.env.VITE_BASE_URL}`);
 
 const SocketProvider = ({ children }) => {
     useEffect(() => {
-        // Basic connection logic
         socket.on('connect', () => {
             console.log('Connected to server');
         });

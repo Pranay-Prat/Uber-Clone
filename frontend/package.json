@@ -11,7 +11,10 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@react-google-maps/api": "^2.20.6",
     "axios": "^1.8.4",
+    "google-map-marker": "^1.2.3",
+    "google-maps-react-markers": "^2.0.15",
     "gsap": "^3.12.7",
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",

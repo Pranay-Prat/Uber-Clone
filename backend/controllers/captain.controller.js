@@ -21,9 +21,10 @@ module.exports.registerCaptain = async(req,res,next)=>{
         email, 
         password:hashPassword, 
         color:vehicle.color, 
-        plate:(vehicle.plate).toUpperCase(), 
+        plate:vehicle.plate.toUpperCase(), 
         capacity:vehicle.capacity, 
-        vehicleType:vehicle.vehicleType
+        vehicleType:vehicle.vehicleType,
+        
     });
     const token = captain.generateAuthToken();
     res.status(201).json({token,captain});

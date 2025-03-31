@@ -11,6 +11,8 @@ import WaitingForDriver from '../components/WaitingForDriver'
 import LookingForDriver from '../components/LookingForDriver'
 import {SocketContext} from '../context/SocketContext'
 import {UserDataContext} from '../context/UserContext'
+import { useNavigate } from 'react-router-dom';
+import LiveTracking from '../components/LiveTracking';
 const Home = () => {
   const [pickup, setPickup] = React.useState('');
   const [destination, setDestination] = React.useState('');
@@ -30,11 +32,17 @@ const Home = () => {
   const [activeField, setActiveField] = React.useState('pickup');
   const [fare, setFare] = React.useState({});
   const [vehicleType,setVehicleType] = React.useState(null)
+  const [ride, setRide] = React.useState(null)
   const {socket} = useContext(SocketContext)
   const {user} = useContext(UserDataContext)
+  const navigate = useNavigate()
   useEffect(() => {    
     socket.emit("join", { userType: "user", userId: user.user._id})
 }, [ user ])
+  socket.on('ride-started',ride =>{
+    setwaitingForDriver(false)
+    navigate('/riding',{state:{ride}})
+  })
     const fetchPickupSuggestions = async (e) => {
     setPickup(e.target.value);
     try {
@@ -76,8 +84,13 @@ const Home = () => {
   const handleDestinationChange = (e) => {
     setDestination(e.target.value);
     debouncedFetchDestination(e);
-  };
-
+  }; 
+  socket.on('ride-confirmed',(ride)=>{
+    console.log('Ride confirmed:', ride);
+    setwaitingForDriver(true)
+    setVehicleFound(false)
+    setRide(ride)
+  })
   const submitHandler = (e) => {
     e.preventDefault();
     if (!pickup || !destination) {
@@ -189,8 +202,8 @@ async function createRide(){
   return (
     <div className='relative h-screen overflow-hidden'> 
       <img className='w-16 absolute left-5 top-5' src='https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png' alt="Uber" />
-      <div className='h-screen w-screen'>
-        <img className='h-full w-full object-cover' src="https://media.istockphoto.com/id/1287419541/vector/city-map-vector-illustration.jpg?s=612x612&w=0&k=20&c=0VAHCECbPYP5Yiid8TTcIKKZgzS2rFnowlmIAtcFnOE=" alt="" />
+      <div className='h-screen w-screen' style={{pointerEvents: 'auto'}}>
+       <LiveTracking/>
       </div>
       <div className='h-screen flex flex-col justify-end absolute top-0 w-full'>
         <div className='h-[35%] p-6 bg-white relative'>
@@ -246,7 +259,7 @@ async function createRide(){
         <LookingForDriver setVehicleFound={setVehicleFound}/>
       </div>
       <div ref={waitingForDriverRef} className='fixed w-full  z-10 bottom-0 bg-white px-3 py-6 pt-8'>
-        <WaitingForDriver waitingForDriver={waitingForDriver} />
+        <WaitingForDriver ride={ride} setVehicleFound={setVehicleFound} waitingForDriver={waitingForDriver} setwaitingForDriver={setwaitingForDriver} />
       </div>
     </div>
   )
