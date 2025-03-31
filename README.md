@@ -17,7 +17,6 @@ This project is a full-stack Uber-like application that allows users to book rid
 - **Captain Registration and Login**: Captains can register and log in to their accounts.
 - **Ride Management**: Captains can accept rides and update their status.
 - **Location Updates**: Captains can update their location in real-time.
-- **Earnings Overview**: Captains can view their completed rides and earnings.
 
 ## Tech Stack
 
