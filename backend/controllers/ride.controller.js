@@ -15,7 +15,7 @@ module.exports.createRide = async (req, res, next) => {
         const ride = await rideService.createRide({ user: req.user._id, pickup, destination, vehicleType });
 
         const pickupCoordinates = await mapsService.getAddressCoordinate(pickup);
-        console.log(pickupCoordinates);
+      
 
         const captainsInRadius = await mapsService.getCaptainInTheRadius(pickupCoordinates.ltd, pickupCoordinates.lng, 10);
         ride.otp="";
@@ -59,7 +59,7 @@ module.exports.confirmRide = async (req, res) => {
     try {
         const { rideId,captainId  } = req.body;
         const ride = await rideService.confirmRide(rideId, captainId);
-        console.log(ride.user)
+    
         sendMessageToSocketId(ride.user.socketId, {
             event: 'ride-confirmed',
             data: ride,
@@ -82,7 +82,7 @@ module.exports.startRide = async (req, res) => {
         const ride = await rideService.startRide(
             rideId, otp, req.captain
     )
-        console.log(ride)
+      
         
         return res.status(200).json(ride);
     } catch (error) {

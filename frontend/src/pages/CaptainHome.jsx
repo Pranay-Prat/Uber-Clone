@@ -53,7 +53,6 @@ updateLocation()
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
   
-      console.log("Ride confirmed response:", response.data);
       
       setridePopupPanel(false);
       setconfirmridePopupPanel(true);

@@ -86,7 +86,7 @@ const Home = () => {
     debouncedFetchDestination(e);
   }; 
   socket.on('ride-confirmed',(ride)=>{
-    console.log('Ride confirmed:', ride);
+    
     setwaitingForDriver(true)
     setVehicleFound(false)
     setRide(ride)
@@ -97,7 +97,7 @@ const Home = () => {
       alert('Please enter both pickup location and destination');
       return;
     }
-    console.log('Trip request submitted:', { pickup, destination });
+   
     setPickup('');
     setDestination('');
   };
@@ -159,7 +159,7 @@ useGSAP(function () {
 async function findTrip(){
   setVehiclePanel(true)
   setPanelOpen(false)
-  console.log({pickup,destination});
+  
   
   try{
   const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
@@ -169,7 +169,7 @@ async function findTrip(){
     }
   })
   setFare(response.data)
-  console.log(response.data)
+  
 }
   catch(error){
     console.error(error)
@@ -189,14 +189,12 @@ useGSAP(function () {
 }, [ waitingForDriver ])
 async function createRide(){
   const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
-    pickup, destination, vehicleType},{
-      headers:{
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    console.log(response.data)
-
-
+    pickup, destination, vehicleType
+  }, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
 }
 
   return (
@@ -256,7 +254,7 @@ async function createRide(){
         <ConfirmedRide fare={fare} vehicleType={vehicleType} pickup={pickup} destination={destination} createRide={createRide} setconfirmRidePanel={setconfirmRidePanel} setVehicleFound={setVehicleFound}/>
       </div>
       <div ref={vehicleFoundRef} className='fixed w-full translate-y-full z-10 bottom-0 bg-white px-3 py-6 pt-8'>
-        <LookingForDriver setVehicleFound={setVehicleFound}/>
+        <LookingForDriver fare={fare} vehicleType={vehicleType} pickup={pickup} destination={destination} setVehicleFound={setVehicleFound}/>
       </div>
       <div ref={waitingForDriverRef} className='fixed w-full  z-10 bottom-0 bg-white px-3 py-6 pt-8'>
         <WaitingForDriver ride={ride} setVehicleFound={setVehicleFound} waitingForDriver={waitingForDriver} setwaitingForDriver={setwaitingForDriver} />

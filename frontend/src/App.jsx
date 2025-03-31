@@ -21,9 +21,13 @@ const App = () => {
           <UserProtectedWrapper>
             <Home/>
         </UserProtectedWrapper>}/>
-        <Route path = '/captain-riding' element={<CaptainRiding/>}/>
+        <Route path = '/captain-riding' element={
+           <CaptainProtectedWrapper><CaptainRiding/></CaptainProtectedWrapper>
+          
+          }/>
         <Route path = '/login' element={<UserLogin/>}/>
-        <Route path='/riding' element={<Riding/>}></Route>
+        <Route path='/riding' element={<UserProtectedWrapper><Riding/></UserProtectedWrapper>
+          }></Route>
         <Route path = '/signup' element={<UserSignup/>}/>
         <Route path = '/captain-login' element={<CaptainLogin/>}/>
         <Route path = '/captain-signup' element={<CaptainSignup/>}/>

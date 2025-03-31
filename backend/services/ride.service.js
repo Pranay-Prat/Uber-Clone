@@ -1,4 +1,4 @@
-const { log } = require('console');
+
 const rideModel = require('../models/ride.model');
 const mapsService = require('../services/maps.service');
 const crypto = require('crypto');
@@ -75,7 +75,7 @@ module.exports.confirmRide = async(rideId,captainId) => {
     if(!ride) {
         throw new Error('Ride not found');
     }
-    console.log(ride)
+
     return ride;
 }
 module.exports.startRide = async (rideId, otp, captain)=>{
@@ -114,7 +114,7 @@ module.exports.endRide = async (rideId, captainId) => {
     if(!ride){
         throw new Error('Ride not found');
     }
-    console.log(ride.status);
+   
     
     if(ride.status !== 'ongoing'){
         throw new Error('Ride not ongoing')
