@@ -51,7 +51,7 @@ We welcome contributions from the community! Follow these steps to get started:
    cd backend
    npm install
    
-Navigate to the frontend folder and install dependencies:
+    Navigate to the frontend folder and install dependencies:
    ```bash
    cd ../frontend
    npm install
